@@ -21,3 +21,45 @@ exports.getAllItems = async (req, res) => {
     res.status(400).send(error.message);
   }
 };
+
+exports.getItem = async (req, res) => {
+
+  try {
+      const itemId = req.params.id;
+      const itemDoc = await db.collection('items').doc(itemId).get();
+      if (!itemDoc.exists) {
+          res.status(404).send('Item not found');
+      } else {
+          res.status(200).json({ id: itemDoc.id, ...itemDoc.data() });
+      }
+  } catch (error) {
+      res.status(400).send(error.message);
+  }
+
+};
+
+exports.updateItem = async (req, res) => {
+
+  try {
+      const itemId = req.params.id;
+      const data = req.body;
+      const itemRef = db.collection('items').doc(itemId);
+      await itemRef.update(data);
+      res.status(200).send('Item updated');
+  } catch (error) {
+      res.status(400).send(error.message);
+  }
+
+};
+
+exports.deleteItem = async (req, res) => {
+
+  try {
+      const itemId = req.params.id;
+      await db.collection('items').doc(itemId).delete();
+      res.status(200).send('Item deleted');
+  } catch (error) {
+      res.status(400).send(error.message);
+  }
+
+};
